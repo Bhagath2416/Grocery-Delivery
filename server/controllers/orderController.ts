@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
 import { prisma } from "../config/prisma.js";
+import {inngest} from "../inngest/index.js";
 //  Create order
 
 // POST /api/orders->in this we are only sending productid and quantity after that the backend store all the details
@@ -74,6 +75,16 @@ for(const item of orderItems){
         data: {stock: {decrement: item.quantity}}
     })
 }
+
+
+// Send Stock update events for each product in the order.this is done by the cron or inngest
+for(const item of orderItems){
+    // send an emailto admin of that product when the stock is less than 10
+    await inngest.send({name: "inventory/stock.updated", data:{productId: item.product}})
+}
+// if rider is not availble automally assign the new rider after 5 min
+// to run this inngest funtions we need to depliy our backend server->for these upload these codes on git hub->then deploy on vercel
+await inngest.send({name: "order/placed",data: {orderId: order.id}})
 }
 
 // Get user's orders
