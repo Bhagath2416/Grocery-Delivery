@@ -26,8 +26,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/products', productRouter)
 app.use('/api/upload', uploadRouter)
 app.use('/api/orders',orderRouter)
-console.log("Functions:", functions.length);
-console.log(functions);
+
 app.use("/api/inngest", serve({ client: inngest, functions, }));
 
 // moving to next api solve -> (Error handling)
