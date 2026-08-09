@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { PackageIcon, UsersIcon, ShoppingBagIcon, AlertTriangleIcon } from "lucide-react";
 import Loading from "../../components/Loading";
 import { statusColors } from "../../assets/statusColors";
-import { dummyAdminDashboardData } from "../../assets/dummyAdminDashboardData";
+
+import api from "../../config/api";
 // import { dummyAdminDashboardData, statusColors } from "../../assets/assets";
 
 interface Stats {
@@ -22,10 +23,13 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setTimeout(() => {
-            setStats(dummyAdminDashboardData);
-            setLoading(false);
-        }, 1000);
+        // setTimeout(() => {
+        //     setStats(dummyAdminDashboardData);
+        //     setLoading(false);
+        // }, 1000);
+
+        // we get data form api
+        api.get("/admin/stats").then((res)=>setStats(res.data)).catch(()=>{}).finally(()=> setLoading(false))
     }, []);
 
     const cards = stats
@@ -83,8 +87,8 @@ export default function AdminDashboard() {
                                 </tr>
                             ) : (
                                 stats?.recentOrders.map((order: any) => (
-                                    <tr key={order._id} className="hover:bg-zinc-50/50 transition-colors">
-                                        <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order._id.slice(-6).toUpperCase()}</td>
+                                    <tr key={order.id} className="hover:bg-zinc-50/50 transition-colors">
+                                        <td className="px-6 py-4 font-mono text-xs text-zinc-500">#{order.id.slice(-6).toUpperCase()}</td>
                                         <td className="px-6 py-4">
                                             <p className="font-medium text-zinc-900">{order.user?.name || "—"}</p>
                                             <p className="text-xs text-zinc-500">{order.user?.email || ""}</p>

@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapPinIcon, PackageIcon, BikeIcon, ChevronDownIcon, MenuIcon, SearchIcon, ShoppingCartIcon, UserIcon, XIcon, ArrowUpRightIcon, ShieldIcon, LogOutIcon } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
     // here first adding dummy data
-    const user: any = { name: "bohn Doe", email: "john@example.com", isAdmin: true }
+    // const user: any = { name: "bohn Doe", email: "john@example.com", isAdmin: true }
+    const {user,logout}=useAuth()
     const { cartCount, setIsCartOpen } = useCart()
     const [searchQuery, setSearchQuery] = useState("")
     const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -20,6 +22,7 @@ const Navbar = () => {
     }
 
     const handleLogout = () =>{
+        logout()
          setUserMenuOpen(false)
          navigate("/");
     }

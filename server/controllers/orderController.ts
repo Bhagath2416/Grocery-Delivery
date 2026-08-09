@@ -1,6 +1,7 @@
 import { Request,Response } from "express";
 import { prisma } from "../config/prisma.js";
 import {inngest} from "../inngest/index.js";
+import Stripe from 'stripe'
 //  Create order
 
 // POST /api/orders->in this we are only sending productid and quantity after that the backend store all the details
@@ -36,6 +37,7 @@ const orderItems=items.map((item: any)=>{
     return{
         product: dbProduct.id,
         name: dbProduct.name,
+        image: dbProduct.image,
         price: dbProduct.price,
         quantity: item.quantity,
         unit: dbProduct.unit,
@@ -62,11 +64,39 @@ const order = await prisma.order.create({
         statusHistory: [{status: "Placed", note: "Order placed successfully",timestamp: new Date()}]
     }
 })
+
+
+
+
+
 if(paymentMethod === 'card'){
     // stripe payment link
+   
+const stripe=new Stripe(process.env.STRIPE_SECRET_KEY as string )
+const session = await stripe.checkout.sessions.create({
+  success_url: 'https://example.com/success',
+  line_items: [
+    {
+      price: '{{PRICE_ID}}',
+      quantity: 2,
+    },
+  ],
+  mode: 'payment',
+});
 }
+
+
+
+
+
+
 // if it is cash on delivry
 res.json({order})
+
+
+
+
+
 
 // decrease stock
 for(const item of orderItems){

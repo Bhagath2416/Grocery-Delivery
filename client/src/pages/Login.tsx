@@ -2,6 +2,8 @@ import { useState } from "react";
 import heroSectionData from "../assets/ChatGPT Image May 18, 2026, 06_41_20 PM.png";
 import { Link } from "react-router-dom";
 import { BikeIcon, UserIcon, MailIcon, LockIcon, Loader2Icon } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 const Login = () => {
   const [isLoginState, setIsLoginState] = useState(true);
   const [name, setName] = useState("");
@@ -9,12 +11,35 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // we get login fuction from the context or Authcontext.tsx
+  const {login,register}=useAuth()
+
   const handleSubmit = async (e: React.SubmitEvent) => {
+    // the page does not reload
     e.preventDefault();
+    console.log("✅ handleSubmit called");
     setLoading(true);
+    // we use try catch block when it is executes with backend
+    try{
+      if(isLoginState){
+        console.log("➡️ Calling login");
+         await login(email,password)
+      }else{
+        console.log("➡️ Calling register");
+        await register(name,email,password)
+      }
+    }catch(error: any){
+      console.log(error);
+            toast.error(error.response?.data?.message || error?.message); 
+    }finally{
+      setLoading(false)
+    }
+
     //  after login sometime it went to home page 10000milli sec=1 sec;
-    setTimeout(() => window.location.href = "/", 1000)
+    // setTimeout(() => window.location.href = "/", 1000)
   }
+
+  
   return (
 
 

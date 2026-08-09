@@ -33,7 +33,7 @@ const AddressForm = ({ resetForm, handleSubmit, form, setForm, editingId }: any)
                             <label className="block text-sm font-medium text-app-green mb-1.5">Street Address</label>
                             <input type="text" required
                                 className="w-full px-4 py-2.5 text-sm rounded-xl border border-app-border focus:border-app-green outline-none"
-                                value={form.label} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                                value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
                         </div>
 
 
@@ -42,7 +42,7 @@ const AddressForm = ({ resetForm, handleSubmit, form, setForm, editingId }: any)
                                 <label className="block text-sm font-medium text-app-green mb-1.5">City</label>
                                 <input type="text" required
                                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-app-border focus:border-app-green outline-none"
-                                    value={form.city} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                                    value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-app-green mb-1.5">State</label>

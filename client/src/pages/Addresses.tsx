@@ -1,14 +1,19 @@
 
 import { useEffect, useState } from "react";
-import { dummyAddressData } from "../assets/dummyAddressData";
+
 import type { Address } from "../types";
 import { MapPinIcon, PlusIcon } from "lucide-react";
 import Loading from "../components/Loading";
 import AddressCard from "../components/AddressCard";
 import AddressForm from "../components/AddressForm";
+import { useAuth } from "../context/AuthContext";
+import api from "../config/api";
+import toast from "react-hot-toast";
 
 
 const Addresses = () => {
+
+  const {updateUser}=useAuth()
 
   // here we can set multiple addresses thats why using array
   const [addresses, setAddresses] = useState<Address[]>([])
@@ -39,9 +44,65 @@ const Addresses = () => {
     setEditingId(null)
   }
 
+  const getLocation=(retries=3): Promise<{lat: number; lng: number}>=>{
+    return new Promise((resolve, reject)=>{
+  if(!navigator.geolocation){
+    reject(new Error("Geolocation not supported"))
+    return ;
+  }
+  const attempt=()=>{
+    navigator.geolocation.getCurrentPosition(
+    (position)=>{
+      resolve({
+        lat:  position.coords.latitude,
+        lng:  position.coords.longitude,
+      })
+    }  ,
+    (error:any)=>{
+        if(retries>0){
+          retries--;
+          setTimeout(attempt, 1000)
+
+        }else{
+          reject(new Error(error.message || "Failed to get location after retries"))
+        }
+    },
+    {
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 6000,
+    }
+    )
+  };
+  attempt()
+    })
+  }
+
   // this function excutes when form is submitted
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault()
+    try{
+   const coords=await getLocation()
+   const payload={...form, ...coords}
+
+    if(editingId){
+      // updating existing addresses
+      const {data}=await api.put(`/addresses/${editingId}`, payload);
+      setAddresses(data.addresses)
+      updateUser({addresses: data.addresses})
+      toast.success("Address updated!")
+    }else{
+    //  for new addresses
+    const {data}=await api.post(`/addresses/`, payload);
+    setAddresses(data.addresses)
+    updateUser({addresses: data.addresses})
+      toast.success("Address updated!")
+    }
+     resetForm()
+
+    }catch(error:any){
+    toast.error(error.response?.data?.message || error.message || "Failed")
+    }
   }
 
   const onEditHandler = (add: Address) => {
@@ -53,14 +114,21 @@ const Addresses = () => {
       zip: add.zip,
       isDefault: add.isDefault
     })
-    setEditingId(add._id)
+    setEditingId(add.id)
     setShowForm(true)
   }
 
   useEffect(() => {
     // see from here ->here first update types/index foler after that based on index create dummy data in assests
-    setAddresses(dummyAddressData)
-    setTimeout(() => setLoading(false), 1000)
+    // setAddresses(dummyAddressData)
+    // setTimeout(() => setLoading(false), 1000)
+    api.get('/addresses').then(({data})=>{
+      setAddresses(data.addresses)
+    }).catch((error:any)=>{
+     toast.error(error.response?.data?.message || error?.message)
+    }).finally(()=>{
+      setLoading(false)
+    })
   }, [])
 
   return (
@@ -95,7 +163,7 @@ const Addresses = () => {
             <div className="space-y-4">
                {addresses.map((addr)=> (
                 // <div>{add.address}</div>
-                <AddressCard key={addr._id} addr={addr} onEditHandler={onEditHandler} setAddresses={setAddresses}/>
+                <AddressCard key={addr.id} addr={addr} onEditHandler={onEditHandler} setAddresses={setAddresses}/>
                ))}
             </div>
           )

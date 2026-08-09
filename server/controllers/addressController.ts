@@ -60,7 +60,7 @@ export const addAddresses = async(req: Request,res: Response)=>{
         where: {userId: req.user!.id},
         orderBy: {createdAt: "asc"}
     })
-    res.status(201).json({addAddresses})
+    res.status(201).json({addresses})
 }
 
 // update address
