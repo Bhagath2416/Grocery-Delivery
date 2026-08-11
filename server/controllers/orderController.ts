@@ -73,16 +73,30 @@ if(paymentMethod === 'card'){
     // stripe payment link
    
 const stripe=new Stripe(process.env.STRIPE_SECRET_KEY as string )
+
+// create session
 const session = await stripe.checkout.sessions.create({
-  success_url: 'https://example.com/success',
+    // when payment is successful redirect to this url
+  success_url: `${req.headers.origin}/orders?clearCart=true`,
+//   when payment is cancelled redirect to checkout page
+  cancel_url: `${req.headers.origin}/checkout`,
+  
   line_items: [
     {
-      price: '{{PRICE_ID}}',
-      quantity: 2,
+      price_data:{
+        currency: "usd",
+        product_data:{
+            name :"Payment Groceries"
+        },
+        unit_amount: Math.round(total * 100)
+      },
+      quantity: 1,
     },
   ],
   mode: 'payment',
+  metadata: {orderId: order.id}
 });
+return res.json({url: session.url})
 }
 
 
@@ -127,7 +141,7 @@ export const getUserOrders =async(req:Request,res:Response)=>{
     // auth
     // he ! is the TypeScript non-null assertion operator.It tells TypeScript: "I know req.user is not null or undefined here."
     userId: req.user!.id,
-    NOT: [{paymentMethod: "card", isPaid: false}]
+    // NOT: [{paymentMethod: "card", isPaid: false}]
   }
 
   if(status && status!=="all"){

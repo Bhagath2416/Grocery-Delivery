@@ -25,6 +25,8 @@ export const stripeWebhook=async(request:Request,response: Response) =>{
   
     // Handle the event
     switch (event.type) {
+
+        
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
        
