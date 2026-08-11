@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import type { Product } from "../../assets/types";
-import {ShoppingBag , Plus, Star } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 import {useCart} from "../../context/CartContext";
 interface Props {
   product: Product;
