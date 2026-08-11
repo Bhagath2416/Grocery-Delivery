@@ -130,7 +130,7 @@ const seedDB=async()=>{
           reviewCount: 200,
         },
         {
-          name: "Bread",
+          name: "snacks",
           description:
             "Soft and freshly baked bread made with quality ingredients. Great for sandwiches, toast, and quick meals.",
           price: 40,
@@ -144,21 +144,7 @@ const seedDB=async()=>{
           reviewCount: 50,
         },
         {
-          name: "Orange Juice",
-          description:
-            "Refreshing orange juice made from fresh oranges. Rich in vitamin C and perfect for a healthy start to your day.",
-          price: 90,
-          originalPrice: 98,
-          image: "/milk.png",
-          category: "beverages",
-          unit: "L",
-          stock: 20,
-          isOrganic: true,
-          rating: 4.6,
-          reviewCount: 110,
-        },
-        {
-          name: "Potato Chips",
+          name: "Protein ",
           description:
             "Crispy and delicious potato chips with a satisfying crunch. Perfect for snacking anytime and sharing with friends.",
           price: 30,
